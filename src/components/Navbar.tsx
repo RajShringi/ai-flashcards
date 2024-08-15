@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React from "react";
 import { Button } from "./ui/button";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export default function Navbar() {
   return (
@@ -13,18 +14,23 @@ export default function Navbar() {
               Flash
             </h2>
           </Link>
-          <ul className="flex items-center gap-4">
-            <li>
-              <Link href={"/"}>
-                <Button variant="link">Log In</Button>
-              </Link>
-            </li>
-            <li>
-              <Link href={"/"}>
-                <Button variant="default">Sign up</Button>
-              </Link>
-            </li>
-          </ul>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          <SignedOut>
+            <ul className="flex items-center gap-4">
+              <li>
+                <Link href={"/sign-in"}>
+                  <Button variant="link">Sign In</Button>
+                </Link>
+              </li>
+              <li>
+                <Link href={"/sign-up"}>
+                  <Button variant="default">Sign up</Button>
+                </Link>
+              </li>
+            </ul>
+          </SignedOut>
         </nav>
       </div>
     </div>

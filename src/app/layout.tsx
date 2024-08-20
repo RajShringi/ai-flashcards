@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/toaster";
+import { UserProvider } from "@/context/UserContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,19 +21,21 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={inter.className}>
-          <div className="h-screen w-screen fixed -z-10">
-            <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]"></div>
-          </div>
-          <main className="">
-            <Navbar />
-            {children}
-            <footer className="py-16 text-center">
-              @ All rights resevered
-            </footer>
-          </main>
-          <Toaster />
-        </body>
+        <UserProvider>
+          <body className={inter.className}>
+            <div className="h-screen w-screen fixed -z-10">
+              <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]"></div>
+            </div>
+            <main className="">
+              <Navbar />
+              {children}
+              <footer className="py-16 text-center">
+                @ All rights resevered
+              </footer>
+            </main>
+            <Toaster />
+          </body>
+        </UserProvider>
       </html>
     </ClerkProvider>
   );

@@ -1,41 +1,45 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
 import { Button } from "./ui/button";
-import { useUser } from "@clerk/nextjs";
-import Link from "next/link";
-import { doc, setDoc } from "firebase/firestore";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { db } from "../../firebase.config";
+import { userContextUser } from "@/context/UserContext";
+import { useUser } from "@clerk/nextjs";
+
+type User = {
+  id: string;
+  email: string;
+  name: string;
+  payment_status: "paid" | "unpaid" | "pending";
+  amount: number | "";
+};
 
 export default function Subscription() {
   const { isLoaded, user } = useUser();
-  const [dbUser, setDbuser] = useState<{
-    email: string;
-    name: string;
-    payment_status: "paid" | "unpaid" | "pending";
-  } | null>(null);
+  const { amountpayedByUser } = userContextUser();
+  const [signedInUser, setSignedInUser] = useState({
+    id: "",
+    email: "",
+    name: "",
+    payment_status: "unpaid",
+    amount: "",
+  });
+  const router = useRouter();
+
+  async function getDBUser() {
+    if (user?.id) {
+      const userRef = doc(db, "users", user.id);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        const { id, name, email, payment_status, amount } = userSnap.data();
+        setSignedInUser({ id, name, email, payment_status, amount });
+      }
+    }
+  }
 
   useEffect(() => {
-    if (isLoaded && user) {
-      const userRef = doc(db, "users", user.id);
-
-      setDoc(userRef, {
-        email: user.emailAddresses[0].emailAddress,
-        name: user.fullName,
-        payment_status: "unpaid", // Default payment status
-      })
-        .then(() => {
-          console.log("User info added to Firestore successfully");
-          setDbuser({
-            email: user.emailAddresses[0].emailAddress ?? "",
-            name: user.fullName ?? "",
-            payment_status: "unpaid",
-          });
-        })
-        .catch((error) => {
-          setDbuser(null);
-          console.error("Error adding user info to Firestore:", error);
-        });
-    }
+    getDBUser();
   }, [user]);
 
   const subscriptions = [
@@ -43,12 +47,14 @@ export default function Subscription() {
       id: 1,
       name: "Basic Plan",
       price: "$5/month",
+      amount: 5,
       features: ["Access to basic flashcards", "Limited AI assistance"],
     },
     {
       id: 2,
       name: "Pro Plan",
       price: "$10/month",
+      amount: 10,
       features: [
         "Access to all flashcards",
         "Advanced AI assistance",
@@ -59,6 +65,7 @@ export default function Subscription() {
       id: 3,
       name: "Premium Plan",
       price: "$20/month",
+      amount: 20,
       features: [
         "All features of Pro",
         "Personalized AI tutoring",
@@ -67,9 +74,18 @@ export default function Subscription() {
     },
   ];
 
-  if (dbUser?.payment_status === "paid") {
+  if (!user && !isLoaded) {
     return "";
   }
+
+  if (signedInUser?.payment_status === "paid" && user) {
+    return "";
+  }
+
+  const handleClick = (amount: number) => {
+    amountpayedByUser(amount);
+    router.push("/checkout");
+  };
 
   return (
     <section className="px-32 flex flex-col gap-6">
@@ -90,25 +106,25 @@ export default function Subscription() {
               ))}
             </ul>
             {plan.name === "Basic Plan" ? (
-              <Link href={"/sign-in"}>
-                <Button variant="link">Choose Plan</Button>
-              </Link>
+              <Button variant="link" onClick={() => handleClick(5)}>
+                Choose Plan
+              </Button>
             ) : (
               ""
             )}
 
             {plan.name === "Pro Plan" ? (
-              <Link href={"/sign-in"}>
-                <Button variant="secondary">Choose Plan</Button>
-              </Link>
+              <Button variant="secondary" onClick={() => handleClick(10)}>
+                Choose Plan
+              </Button>
             ) : (
               ""
             )}
 
             {plan.name === "Premium Plan" ? (
-              <Link href={"/sign-in"}>
-                <Button variant="default">Choose Plan</Button>
-              </Link>
+              <Button variant="default" onClick={() => handleClick(20)}>
+                Choose Plan
+              </Button>
             ) : (
               ""
             )}

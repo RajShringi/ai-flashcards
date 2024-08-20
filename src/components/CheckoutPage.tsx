@@ -48,7 +48,7 @@ export default function CheckoutPage({ amount }: { amount: number }) {
       elements,
       clientSecret,
       confirmParams: {
-        return_url: `https://ai-flashcards-a9ezwrujm-rajshringis-projects.vercel.app/payment-success?amount=${amount}`,
+        return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment-success?amount=${amount}`,
       },
     });
 

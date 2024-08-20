@@ -4,6 +4,8 @@ import { db } from "../../../firebase.config";
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Frown } from "lucide-react";
 
 type Flashcards = {
   id: string;
@@ -31,7 +33,6 @@ export default function Flashcards() {
               flashcards: { front: string; back: string }[];
             }),
           }));
-          console.log(flashcards, "falshcards");
           setFlashcards(flashcards);
         }
       } catch (error) {
@@ -54,17 +55,31 @@ export default function Flashcards() {
     <div className="px-32 flex flex-col gap-4">
       <h2 className="font-semibold text-3xl">All Flashcards</h2>
       <hr />
-      <div className="flex gap-4">
-        {flashcards.map((flashcard) => (
-          <Link
-            href={`/flashcards/${flashcard.id}`}
-            key={flashcard.id}
-            className="p-4 border border-gray-300 rounded-lg bg-white"
-          >
-            {flashcard.name}
-          </Link>
-        ))}
-      </div>
+      {flashcards.length > 0 ? (
+        <div className="flex gap-4">
+          {flashcards.map((flashcard) => (
+            <Link
+              href={`/flashcards/${flashcard.id}`}
+              key={flashcard.id}
+              className="p-4 border border-gray-300 rounded-lg bg-white"
+            >
+              {flashcard.name}
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div className="max-w-[600px] mx-auto flex flex-col items-center justify-center gap-4 mt-6">
+          <Frown size={64} className="text-gray-400" />
+          <div>
+            It looks like you haven't created any topics yet. Start by adding a
+            new topic to organize your flashcards and enhance your learning
+            experience!
+          </div>
+          <Button>
+            <Link href={"/generate"}>Create Topic</Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

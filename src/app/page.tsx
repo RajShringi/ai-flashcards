@@ -1,3 +1,4 @@
+import Hero from "@/components/Hero";
 import Subscription from "@/components/Subscription";
 import { Button } from "@/components/ui/button";
 
@@ -5,20 +6,7 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-8">
       {/* hero section */}
-      <section className="flex justify-center items-center h-[70vh]">
-        {/* <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"></div> */}
-        <div className="flex flex-col items-center gap-4 max-w-[800px]">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center">
-            AI-Powered Flashcards for Effective Learning
-          </h1>
-          <p className="text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400 text-center">
-            Enhance your study sessions with intelligent flashcards that adapt
-            to your learning style.
-          </p>
-
-          <Button variant="default">Get Started</Button>
-        </div>
-      </section>
+      <Hero />
 
       {/* features section */}
       <section className="px-32 flex flex-col gap-6 h-[40vh]">
